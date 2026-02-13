@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Weather Dashboard</title>
+
+<style>
+body{
+font-family:Arial;
+background:#e3f2fd;
+text-align:center;
+padding:20px;
+}
+
+input,button{
+padding:10px;
+margin:5px;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-top:20px;
+border-radius:10px;
+}
+
+.forecast{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Weather Dashboard</h1>
+
+<input id="city" placeholder="Enter City"/>
+<button onclick="getWeather()">Search</button>
+
+<div id="loading" style="display:none">Loading...</div>
+<div id="error" style="color:red"></div>
+
+<div id="weather"></div>
+<div class="forecast" id="forecast"></div>
+
+<script>
+const API_KEY="YOUR_API_KEY_HERE";
+
+window.onload=()=>{
+if(localStorage.getItem("city")){
+document.getElementById("city").value=localStorage.getItem("city");
+}
+};
+
+async function getWeather(){
+
+const city=document.getElementById("city").value.trim();
+
+if(!city){
+alert("Enter city");
+return;
+}
+
+localStorage.setItem("city",city);
+
+document.getElementById("loading").style.display="block";
+document.getElementById("error").innerText="";
+
+try{
+
+let res=await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+if(!res.ok) throw "City not found";
+
+let data=await res.json();
+
+displayWeather(data);
+
+let forecastRes=await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`);
+let forecastData=await forecastRes.json();
+
+displayForecast(forecastData);
+
+}catch(err){
+document.getElementById("error").innerText=err;
+}
+
+document.getElementById("loading").style.display="none";
+}
+
+function displayWeather(d){
+
+document.getElementById("weather").innerHTML=`
+<div class="card">
+<h2>${d.name}, ${d.sys.country}</h2>
+<p>${d.weather[0].description}</p>
+<p>Temp: ${d.main.temp}°C</p>
+<p>Feels Like: ${d.main.feels_like}</p>
+<p>Humidity: ${d.main.humidity}</p>
+<p>Wind: ${d.wind.speed}</p>
+<p>Pressure: ${d.main.pressure}</p>
+</div>
+`;
+}
+
+function displayForecast(d){
+
+let html="";
+let days={};
+
+d.list.forEach(item=>{
+let date=item.dt_txt.split(" ")[0];
+if(!days[date]){
+days[date]=item;
+}
+});
+
+Object.values(days).slice(0,5).forEach(day=>{
+html+=`
+<div class="card">
+<p>${new Date(day.dt_txt).toDateString()}</p>
+<p>${day.main.temp}°C</p>
+<p>${day.weather[0].description}</p>
+</div>
+`;
+});
+
+document.getElementById("forecast").innerHTML=html;
+}
+</script>
+
+</body>
+</html>
