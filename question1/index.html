@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Product Card</title>
+
+<style>
+body{
+font-family: Arial, sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+display:flex;
+justify-content:center;
+}
+
+.card{
+background:white;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+overflow:hidden;
+max-width:350px;
+width:100%;
+}
+
+.card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+.card-content{
+padding:15px;
+}
+
+.price{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+.old-price{
+text-decoration:line-through;
+color:red;
+}
+
+.discount{
+background:green;
+color:white;
+padding:3px 8px;
+border-radius:5px;
+font-size:12px;
+}
+
+.qty{
+display:flex;
+align-items:center;
+gap:10px;
+margin:10px 0;
+}
+
+.qty button{
+padding:5px 10px;
+}
+
+button.add{
+width:100%;
+padding:10px;
+background:#007bff;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.success{
+color:green;
+margin-top:10px;
+display:none;
+}
+
+@media(min-width:768px){
+.card{
+max-width:500px;
+}
+}
+
+@media(min-width:1024px){
+.card{
+max-width:700px;
+}
+}
+</style>
+</head>
+
+<body>
+
+<article class="card">
+
+<img src="https://via.placeholder.com/400"
+onerror="this.src='https://via.placeholder.com/400?text=Image+Not+Found'"
+alt="Product Image"/>
+
+<div class="card-content">
+
+<h2 id="productName">Wireless Headphones</h2>
+
+<div class="price">
+<span class="old-price" id="oldPrice">₹4000</span>
+<span id="newPrice">₹3000</span>
+<span class="discount">25% OFF</span>
+</div>
+
+<p>High quality noise cancelling headphones.</p>
+
+<div class="qty">
+<button id="decrease">-</button>
+<span id="quantity">1</span>
+<button id="increase">+</button>
+</div>
+
+<button class="add" id="addCart">Add To Cart</button>
+
+<div class="success" id="successMsg">Added to cart successfully!</div>
+
+</div>
+</article>
+
+<script>
+let qty = 1;
+const min = 1;
+const max = 10;
+
+const qtyText = document.getElementById("quantity");
+const dec = document.getElementById("decrease");
+const inc = document.getElementById("increase");
+const addBtn = document.getElementById("addCart");
+const msg = document.getElementById("successMsg");
+
+function updateButtons(){
+dec.disabled = qty === min;
+inc.disabled = qty === max;
+}
+
+dec.onclick = () => {
+if(qty>min){
+qty--;
+qtyText.innerText = qty;
+updateButtons();
+}
+};
+
+inc.onclick = () => {
+if(qty<max){
+qty++;
+qtyText.innerText = qty;
+updateButtons();
+}
+};
+
+addBtn.onclick = () => {
+msg.style.display="block";
+
+const name=document.getElementById("productName").innerText;
+const price=3000;
+
+console.log({
+product:name,
+quantity:qty,
+price:price,
+total:qty*price
+});
+
+setTimeout(()=> msg.style.display="none",2000);
+};
+
+updateButtons();
+</script>
+
+</body>
+</html>
